@@ -47,9 +47,9 @@ Class attendance is not mandatory and I will not take roll. However, this is a l
 ## Grading
 
 Standard scale (A = 90-100) and weights are as follows:
-* Assignments - **25%**
-* Midterm Exam 1 - **25%**
-* Midterm Exam 2 - **25%**
-* Final Exam - **25%**
+* Assignments (25%)
+* Midterm Exam 1 (25%)
+* Midterm Exam 2 (25%)
+* Final Exam (25%)
 
 *The above criteria represent the lowest grade you will receive in the course. Several other factors may raise your grade, including but not limited to overall class performance and improvement in your performance over the semester.*
