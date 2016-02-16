@@ -1,0 +1,8 @@
+processcount 3 # Read 3 processes
+runfor 30 # Run for 30 time units
+use fcfs # Can be fcfs, sjf, or rr
+# quantum 2 # Time quantum – only if using rr
+process name P1 arrival 0 burst 24
+process name P2 arrival 3 burst 3
+process name P3 arrival 4 burst 3
+end
