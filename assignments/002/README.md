@@ -8,19 +8,22 @@
 
 **Input**: Your program will read a file from the current directory called **processes.in**, which will be formatted as follows.  Your program should ignore everything on a line after a **#** mark and ignore additional spaces in input.
 
-```processcount 2     # Read 2 processes
+```
+processcount 2     # Read 2 processes
 runfor 15          # Run for 15 time units
 use rr             # Can be fcfs, sjf, or rr
 quantum 2          # Time quantum – only if using rr
 process name P1 arrival 3 burst 5
 process name P2 arrival 0 burst 9
-end```
+end
+```
 
 *Note that the processes do not need to be specified in order of arrival, and do not need to have similar names.*
 
 **Output**: Generate a file called **processes.out**, formatted as follows.
 
-```2 processes
+```
+2 processes
 Using Round-Robin
 Quantum 2
 
@@ -40,7 +43,8 @@ Time 14: Idle
 Finished at time 15
 
 P1 wait 5 turnaround 10
-P2 wait 5 turnaround 14```
+P2 wait 5 turnaround 14
+```
 
 **Clarifications**
 
