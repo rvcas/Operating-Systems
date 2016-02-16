@@ -1,0 +1,17 @@
+3 processes
+Using First Come First Served
+
+Time 0: P1 arrived
+Time 0: P1 selected (burst 24)
+Time 3: P2 arrived
+Time 4: P3 arrived
+Time 24: P1 finished
+Time 24: P2 selected (burst 3)
+Time 27: P2 finished
+Time 27: P3 selected (burst 3)
+Time 30: P3 finished
+Finished at time 30
+
+P1 wait 0 turnaround 24
+P2 wait 21 turnaround 24
+P3 wait 23 turnaround 26

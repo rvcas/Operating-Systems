@@ -1,0 +1,26 @@
+4 processes
+Using Shortest Job First (Pre)
+
+Time 0: P1 arrived
+Time 0: P1 selected (burst 8)
+Time 1: P2 arrived
+Time 1: P2 selected (burst 4)
+Time 2: P3 arrived
+Time 3: P4 arrived
+Time 5: P2 finished
+Time 5: P4 selected (burst 5)
+Time 10: P4 finished
+Time 10: P1 selected (burst 7)
+Time 17: P1 finished
+Time 17: P3 selected (burst 9)
+Time 26: P3 finished
+Time 26: IDLE
+Time 27: IDLE
+Time 28: IDLE
+Time 29: IDLE
+Finished at time 30
+
+P1 wait 9 turnaround 17
+P2 wait 0 turnaround 4
+P3 wait 15 turnaround 24
+P4 wait 2 turnaround 7

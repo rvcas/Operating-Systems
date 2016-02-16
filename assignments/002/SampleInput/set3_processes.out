@@ -1,0 +1,15 @@
+2 processes
+Using Shortest Job First (Pre)
+
+Time 0: P2 arrived
+Time 0: P2 selected (burst 9)
+Time 3: P1 arrived
+Time 3: P1 selected (burst 5)
+Time 8: P1 finished
+Time 8: P2 selected (burst 6)
+Time 14: P2 finished
+Time 14: IDLE
+Finished at time 15
+
+P1 wait 0 turnaround 5
+P2 wait 5 turnaround 14
