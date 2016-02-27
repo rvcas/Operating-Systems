@@ -136,13 +136,17 @@ control *init() {
         fgets(buffer, 100,in); // throwaway entire next line
     }
 
+    // allocate space for the number of processes
     ptr->processes = malloc(sizeof(process)*ptr->processcount);
 
+    // check if malloc worked
     if (ptr->processes == NULL) {
         printf("failed to allocate space for processes struct array\n");
         return NULL;
     }
 
+    // array of process structs:
+    // name, arrival, & burst
     for (int i = 0; i < ptr->processcount; i++) {
         // set process name
         fscanf(in, "%s %s %s\n", buffer, buffer, buffer);
@@ -155,11 +159,12 @@ control *init() {
         fscanf(in, "%s %d\n", buffer, &ptr->processes[i].burst);
     }
 
-    fclose (in);
+    fclose (in); // close file
 
-    return ptr;
+    return ptr; // return the scheduler
 }
 
+// make sure i got everything
 void printInfo(control *scheduler) {
     printf("Process Count: %d\n", scheduler->processcount);
     printf("Run For: %d\n", scheduler->processcount);
