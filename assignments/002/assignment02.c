@@ -25,6 +25,8 @@ typedef struct p {
     string name;
     int arrival;
     int burst;
+    int wait;
+    int turnaround;
 } process;
 
 // represents all the info from
@@ -33,29 +35,47 @@ typedef struct c {
     int processcount;
     int runfor;
     int quantum;
+    int total_time;
     algorithms use;
     process *processes;
 } control;
 
 // rr
-void round_robin() {
+void round_robin(control *scheduler) {
     FILE *out = fopen(OUTPUT_FILE,"r");
 
-    printf("Using Round Robin\n");
+
 }
 
 // fcfs
-void first_come_first_serve() {
+void first_come_first_serve(control *scheduler) {
     FILE *out = fopen(OUTPUT_FILE,"r");
 
-    printf("Using First Come First Serve\n");
+    // wait for first is 0
+    scheduler->processes[0].wait = 0;
+
+    // calc wait time
+    for (int i = 1; i < scheduler->processcount; i++) {
+        scheduler->processes[i].wait = 0;
+
+        for (int j = 0; j < i; j++) {
+            scheduler->processes[i].wait += scheduler->processes[j].burst;
+        }
+    }
+
+    // calc turnaround
+    for (int i = 0; i < scheduler->processcount; i++) {
+        scheduler->processes[i].turnaround = scheduler->processes[i].burst + scheduler->processes[i].wait;
+
+        printf("%s wait %d turnaround %d\n", scheduler->processes[i].name,   scheduler->processes[i].wait, scheduler->processes[i].turnaround);
+    }
 }
 
 // sjf
-void shortest_job_first() {
+void shortest_job_first(control *scheduler) {
     FILE *out = fopen(OUTPUT_FILE,"r");
 
-    printf("Using Shortest Job First\n");
+
 }
 
 void run(control *scheduler) {
@@ -66,13 +86,13 @@ void run(control *scheduler) {
 
     switch (scheduler->use) {
         case fcfs:
-            first_come_first_serve();
+            first_come_first_serve(scheduler);
             break;
         case sjf:
-            shortest_job_first();
+            shortest_job_first(scheduler);
             break;
         case rr:
-            round_robin();
+            round_robin(scheduler);
             break;
         default:
             printf("nothing happened\n");
@@ -97,6 +117,7 @@ control *init() {
     }
 
     char buffer[50]; // buffer to read in strings
+    ptr->total_time = 0;
 
     // set process count
     fscanf(in, "%s %d\n", buffer, &ptr->processcount);
@@ -157,6 +178,8 @@ control *init() {
 
         // set burst
         fscanf(in, "%s %d\n", buffer, &ptr->processes[i].burst);
+
+        ptr->total_time += ptr->processes[i].burst;
     }
 
     fclose (in); // close file
@@ -170,6 +193,7 @@ void printInfo(control *scheduler) {
     printf("Run For: %d\n", scheduler->processcount);
     printf("Quantum: %d\n", scheduler->quantum);
     printf("Use: %d\n", scheduler->use);
+    printf("Total Time: %d\n", scheduler->total_time);
     printf("Processes:\n");
 
     for (int i = 0; i < scheduler->processcount; i++) {
