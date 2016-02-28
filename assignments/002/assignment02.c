@@ -35,13 +35,15 @@ typedef struct c {
     int processcount;
     int runfor;
     int quantum;
-    int total_time;
     algorithms use;
     process *processes;
 } control;
 
 // rr
 void round_robin(control *scheduler) {
+    printf("%d processes\n", scheduler->processcount);
+    printf("Using Round Robin\n\n");
+
     FILE *out = fopen(OUTPUT_FILE,"r");
 
 
@@ -49,35 +51,65 @@ void round_robin(control *scheduler) {
 
 // fcfs
 void first_come_first_serve(control *scheduler) {
-    FILE *out = fopen(OUTPUT_FILE,"r");
+    printf("%d processes\n", scheduler->processcount);
+    printf("Using First Come First Serve\n\n");
+
+    FILE *out = fopen(OUTPUT_FILE,"w");
+
+    if (out == NULL) {
+        printf("output file failed to open\n"); // yell
+        return;
+    }
 
     // wait for first is 0
     scheduler->processes[0].wait = 0;
 
     // calc wait time
-    for (int i = 1; i < scheduler->processcount; i++) {
+    for (int i = 0; i < scheduler->processcount; i++) {
         scheduler->processes[i].wait = 0;
 
-        for (int j = 0; j < i; j++) {
-            scheduler->processes[i].wait += scheduler->processes[j].burst;
+        if (i > 0) {
+            for (int j = 0; j < i; j++) {
+                scheduler->processes[i].wait += scheduler->processes[j].burst;
+            }
+
+            scheduler->processes[i].wait -= scheduler->processes[i].arrival;
+        }
+
+        scheduler->processes[i].turnaround = scheduler->processes[i].burst + scheduler->processes[i].wait;
+    }
+
+    // keeps track of the process currently bursting
+    int current_process = 0;
+
+    // run for
+    for (int i = 0; i <= scheduler->runfor; i++) {
+        // check if any processes arrived
+        for (int j = 0; j < scheduler->processcount; j++) {
+            if (scheduler->processes[j].arrival == i) {
+                printf("Time %d: %s arrived\n", i, scheduler->processes[j].name);
+            }
+
         }
     }
 
-    // calc turnaround
+    // print process info
     for (int i = 0; i < scheduler->processcount; i++) {
-        scheduler->processes[i].turnaround = scheduler->processes[i].burst + scheduler->processes[i].wait;
-
         printf("%s wait %d turnaround %d\n", scheduler->processes[i].name,   scheduler->processes[i].wait, scheduler->processes[i].turnaround);
     }
 }
 
 // sjf
 void shortest_job_first(control *scheduler) {
+    printf("%d processes\n", scheduler->processcount);
+    printf("Using Shortest Job First\n\n");
+
     FILE *out = fopen(OUTPUT_FILE,"r");
 
 
 }
 
+// choose which algorithm to execute
 void run(control *scheduler) {
     if (scheduler == NULL) {
         printf("scheduler not initialized\n");
@@ -105,7 +137,7 @@ control *init() {
     // check if file actually opened
     if (in == NULL)
     {
-        printf("file failed to open\n"); // yell
+        printf("input file failed to open\n"); // yell
         return NULL;
     }
 
@@ -117,7 +149,6 @@ control *init() {
     }
 
     char buffer[50]; // buffer to read in strings
-    ptr->total_time = 0;
 
     // set process count
     fscanf(in, "%s %d\n", buffer, &ptr->processcount);
@@ -178,8 +209,6 @@ control *init() {
 
         // set burst
         fscanf(in, "%s %d\n", buffer, &ptr->processes[i].burst);
-
-        ptr->total_time += ptr->processes[i].burst;
     }
 
     fclose (in); // close file
@@ -187,26 +216,10 @@ control *init() {
     return ptr; // return the scheduler
 }
 
-// make sure i got everything
-void printInfo(control *scheduler) {
-    printf("Process Count: %d\n", scheduler->processcount);
-    printf("Run For: %d\n", scheduler->processcount);
-    printf("Quantum: %d\n", scheduler->quantum);
-    printf("Use: %d\n", scheduler->use);
-    printf("Total Time: %d\n", scheduler->total_time);
-    printf("Processes:\n");
-
-    for (int i = 0; i < scheduler->processcount; i++) {
-        printf("Name: %s Arrival: %d Burst: %d\n", scheduler->processes[i].name, scheduler->processes[i].arrival, scheduler->processes[i].burst);
-    }
-}
-
 int main(int argc, char const *argv[]) {
 
     // initialize the data stuctures
     control *scheduler = init();
-
-    printInfo(scheduler);
 
     // run one of the scheduling algorithms
     run(scheduler);
