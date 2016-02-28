@@ -79,19 +79,30 @@ void first_come_first_serve(control *scheduler) {
         scheduler->processes[i].turnaround = scheduler->processes[i].burst + scheduler->processes[i].wait;
     }
 
-    // keeps track of the process currently bursting
-    int current_process = 0;
+    // keeps track time for next burst
+    int next_burst = 0;
 
     // run for
     for (int i = 0; i <= scheduler->runfor; i++) {
         // check if any processes arrived
         for (int j = 0; j < scheduler->processcount; j++) {
+            // arrived
             if (scheduler->processes[j].arrival == i) {
                 printf("Time %d: %s arrived\n", i, scheduler->processes[j].name);
             }
 
+            // finished
+            if ((scheduler->processes[j].turnaround + scheduler->processes[j].arrival) == i) {
+                printf("Time %d: %s finished\n", i, scheduler->processes[j].name);
+            }
+
+            // select
+            if ((scheduler->processes[j].wait + scheduler->processes[j].arrival) == i) {
+                printf("Time %d: %s selected (burst %d)\n", i, scheduler->processes[j].name, scheduler->processes[j].burst);
+            }
         }
     }
+    printf("Finished at time %d\n\n", scheduler->runfor);
 
     // print process info
     for (int i = 0; i < scheduler->processcount; i++) {
