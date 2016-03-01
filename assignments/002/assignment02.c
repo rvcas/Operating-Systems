@@ -42,11 +42,57 @@ typedef struct c {
 // rr
 void round_robin(control *scheduler) {
     printf("%d processes\n", scheduler->processcount);
-    printf("Using Round Robin\n\n");
+    printf("Using Round Robin\n");
+    printf("Quantum %d\n\n", scheduler->quantum);
 
     FILE *out = fopen(OUTPUT_FILE,"r");
 
+    if (out == NULL) {
+        printf("output file failed to open\n"); // yell
+        return;
+    }
 
+    int remaining_burst[scheduler->processcount];
+
+    for (int i = 0; i < scheduler->processcount; i++) {
+        remaining_burst[i] = scheduler->processes[i].burst;
+        scheduler->processes[i].wait = 0;
+        scheduler->processes[i].turnaround = 0;
+    }
+
+    int flag = 0;
+    int time = 0, count = 0, remain = scheduler->processcount;
+    while (remain != 0) {
+        if (remaining_burst[count] <= scheduler->quantum && remaining_burst[count] > 0) {
+            time += remaining_burst[count];
+            remaining_burst[count] = 0;
+            flag = 1;
+        } else if (remaining_burst[count] > 0) {
+            remaining_burst[count] -= scheduler->quantum;
+            time += scheduler->quantum;
+        }
+
+        if (remaining_burst[count] == 0 && flag == 1) {
+            remain--;
+            printf("%s %d %d\n", scheduler->processes[count].name, (time - scheduler->processes[count].arrival), (time - scheduler->processes[count].arrival - scheduler->processes[count].burst));
+            scheduler->processes[count].wait += scheduler->processes[count].burst - scheduler->processes[count].arrival;
+            scheduler->processes[count].turnaround += time - scheduler->processes[count].arrival;
+            flag = 0;
+        }
+
+        if (count == (scheduler->processcount - 1)) {
+            count = 0;
+        } else if (scheduler->processes[count+1].arrival <= time) {
+            count++;
+        } else {
+            count = 0;
+        }
+    }
+
+    // print process info
+    for (int i = 0; i < scheduler->processcount; i++) {
+        printf("%s wait %d turnaround %d\n", scheduler->processes[i].name,   scheduler->processes[i].wait, scheduler->processes[i].turnaround);
+    }
 }
 
 // fcfs
@@ -113,7 +159,7 @@ void first_come_first_serve(control *scheduler) {
 // sjf
 void shortest_job_first(control *scheduler) {
     printf("%d processes\n", scheduler->processcount);
-    printf("Using Shortest Job First\n\n");
+    printf("Using Shortest Job First (pre)\n\n");
 
     FILE *out = fopen(OUTPUT_FILE,"r");
 
