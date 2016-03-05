@@ -41,16 +41,16 @@ typedef struct c {
 
 // rr
 void round_robin(control *scheduler) {
-    printf("%d processes\n", scheduler->processcount);
-    printf("Using Round Robin\n");
-    printf("Quantum %d\n\n", scheduler->quantum);
-
-    FILE *out = fopen(OUTPUT_FILE,"r");
+    FILE *out = fopen(OUTPUT_FILE,"w");
 
     if (out == NULL) {
         printf("output file failed to open\n"); // yell
         return;
     }
+
+    fprintf(out, "%d processes\n", scheduler->processcount);
+    fprintf(out, "Using Round Robin\n");
+    fprintf(out, "Quantum %d\n\n", scheduler->quantum);
 
     int remaining_burst[scheduler->processcount];
 
@@ -74,7 +74,7 @@ void round_robin(control *scheduler) {
 
         if (remaining_burst[count] == 0 && flag == 1) {
             remain--;
-            printf("%s %d %d\n", scheduler->processes[count].name, (time - scheduler->processes[count].arrival), (time - scheduler->processes[count].arrival - scheduler->processes[count].burst));
+            fprintf(out, "%s %d %d\n", scheduler->processes[count].name, (time - scheduler->processes[count].arrival), (time - scheduler->processes[count].arrival - scheduler->processes[count].burst));
             scheduler->processes[count].wait += scheduler->processes[count].burst - scheduler->processes[count].arrival;
             scheduler->processes[count].turnaround += time - scheduler->processes[count].arrival;
             flag = 0;
@@ -91,21 +91,21 @@ void round_robin(control *scheduler) {
 
     // print process info
     for (int i = 0; i < scheduler->processcount; i++) {
-        printf("%s wait %d turnaround %d\n", scheduler->processes[i].name,   scheduler->processes[i].wait, scheduler->processes[i].turnaround);
+        fprintf(out, "%s wait %d turnaround %d\n", scheduler->processes[i].name,   scheduler->processes[i].wait, scheduler->processes[i].turnaround);
     }
 }
 
 // fcfs
 void first_come_first_serve(control *scheduler) {
-    printf("%d processes\n", scheduler->processcount);
-    printf("Using First Come First Serve\n\n");
-
     FILE *out = fopen(OUTPUT_FILE,"w");
 
     if (out == NULL) {
         printf("output file failed to open\n"); // yell
         return;
     }
+
+    fprintf(out, "%d processes\n", scheduler->processcount);
+    fprintf(out, "Using First Come First Served\n\n");
 
     // wait for first is 0
     scheduler->processes[0].wait = 0;
@@ -134,36 +134,55 @@ void first_come_first_serve(control *scheduler) {
         for (int j = 0; j < scheduler->processcount; j++) {
             // arrived
             if (scheduler->processes[j].arrival == i) {
-                printf("Time %d: %s arrived\n", i, scheduler->processes[j].name);
+                fprintf(out, "Time %d: %s arrived\n", i, scheduler->processes[j].name);
             }
 
             // finished
             if ((scheduler->processes[j].turnaround + scheduler->processes[j].arrival) == i) {
-                printf("Time %d: %s finished\n", i, scheduler->processes[j].name);
+                fprintf(out, "Time %d: %s finished\n", i, scheduler->processes[j].name);
             }
 
             // select
             if ((scheduler->processes[j].wait + scheduler->processes[j].arrival) == i) {
-                printf("Time %d: %s selected (burst %d)\n", i, scheduler->processes[j].name, scheduler->processes[j].burst);
+                fprintf(out, "Time %d: %s selected (burst %d)\n", i, scheduler->processes[j].name, scheduler->processes[j].burst);
             }
         }
     }
-    printf("Finished at time %d\n\n", scheduler->runfor);
+    fprintf(out, "Finished at time %d\n\n", scheduler->runfor);
 
     // print process info
     for (int i = 0; i < scheduler->processcount; i++) {
-        printf("%s wait %d turnaround %d\n", scheduler->processes[i].name,   scheduler->processes[i].wait, scheduler->processes[i].turnaround);
+        fprintf(out, "%s wait %d turnaround %d\n", scheduler->processes[i].name,   scheduler->processes[i].wait, scheduler->processes[i].turnaround);
     }
 }
 
 // sjf
 void shortest_job_first(control *scheduler) {
-    printf("%d processes\n", scheduler->processcount);
-    printf("Using Shortest Job First (pre)\n\n");
+    FILE *out = fopen(OUTPUT_FILE,"w");
 
-    FILE *out = fopen(OUTPUT_FILE,"r");
+    fprintf(out, "%d processes\n", scheduler->processcount);
+    fprintf(out, "Using Shortest Job First (pre)\n\n");
 
+    scheduler->processes[0].wait = 0;
 
+    // calc wait time
+    for (int count = 1; count < scheduler->processcount; count++) {
+        scheduler->processes[count].wait = 0;
+
+        for (int next = 0; next < count; next++) {
+            scheduler->processes[count].wait += scheduler->processes[next].burst;
+        }
+    }
+
+    // calc turnaround
+    for (int count = 0; count < scheduler->processcount; count++) {
+        scheduler->processes[count].turnaround = scheduler->processes[count].burst + scheduler->processes[count].wait;
+    }
+
+    // print process info
+    for (int i = 0; i < scheduler->processcount; i++) {
+        fprintf(out, "%s wait %d turnaround %d\n", scheduler->processes[i].name,   scheduler->processes[i].wait, scheduler->processes[i].turnaround);
+    }
 }
 
 // choose which algorithm to execute
